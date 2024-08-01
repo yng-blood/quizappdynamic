@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz App</title>
+    <link rel="stylesheet" href="./style.css">
+
+    <style>
+        .correct {
+            background-color: green;
+            color: white;
+        }
+        .wrong {
+            background-color: red;
+            color:white    ;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="MainContainer boxcabin">
+        <a  href="./index.html" class="smalls"> go to home</a>
+        <p id="time" class="boxmincabin"></p>
+       
+        
+        <div class="questionBank" id="questionBank">
+            <div class="centerCabin"> 
+               <span id="Queque"></span> <span id="questionTHead"></span>
+               <br>
+               <br>
+                <button class="optionbtn"  id="op1" onclick="checkAnswer('A')"></button>
+                <button class="optionbtn" id="op2" onclick="checkAnswer('B')"></button>
+                <button class="optionbtn" id="op3" onclick="checkAnswer('C')"></button>
+                <button class="optionbtn" id="op4" onclick="checkAnswer('D')"></button>
+            </div>
+        </div>
+        <br>
+        <button id="submitbtn" class="button-19" role="button" onclick="submitEvent()">Next</button>
+    </div>
+    <script>
+        const questionBank = document.getElementById("questionBank");
+        let counter = 0;
+        let Canswer = 0;
+        let Wanswer = 0;
+        let Nattempt = 0;
+        let countdown;
+        let timerInterval;
+        const urlParams = new URLSearchParams(window.location.search);
+        const name = urlParams.get('name');
+
+        const queobj = [
+            {
+                que: "A car travels 150 km in 3 hours. What is its speed?",
+                A: "50 km/h",
+                B: "45 km/h",
+                C: "60 km/h",
+                D: "55 km/h",
+                Answer: "A",
+            },
+            {
+                que: "If a person walks at a speed of 6 km/h, how long will it take to walk 24 km?",
+                A: "3 hours",
+                B: "4 hours",
+                C: "5 hours",
+                D: "6 hours",
+                Answer: "B",
+            },
+            {
+                que: "A train travels at 90 km/h. How far will it travel in 2 hours and 30 minutes?",
+                A: "225 km",
+                B: "210 km",
+                C: "180 km",
+                D: "240 km",
+                Answer: "A",
+            },
+            {
+                que: "Two cyclists start from the same point and ride in opposite directions. One rides at 12 km/h and the other at 18 km/h. How far apart will they be in 2 hours?",
+                A: "40 km",
+                B: "50 km",
+                C: "60 km",
+                D: "70 km",
+                Answer: "C",
+            },
+            {
+                que: "A person covers a distance of 20 km in 4 hours. What is their speed in meters per second?",
+                A: "1 m/s",
+                B: "1.25 m/s",
+                C: "1.5 m/s",
+                D: "2 m/s",
+                Answer: "B",
+            },
+            {
+                que: "A car travels at a speed of 80 km/h for the first half of the journey and 100 km/h for the second half. If the total distance is 360 km, what is the total time taken for the journey?",
+                A: "4 hours",
+                B: "4.5 hours",
+                C: "5 hours",
+                D: "5.5 hours",
+                Answer: "C",
+            },
+            {
+                que: "A train 200 meters long passes a pole in 10 seconds. What is the speed of the train?",
+                A: "20 m/s",
+                B: "25 m/s",
+                C: "30 m/s",
+                D: "35 m/s",
+                Answer: "A",
+            },
+            {
+                que: "If a car's speed is reduced by 20%, it takes 1 hour more to cover a distance of 240 km. What is the original speed of the car?",
+                A: "60 km/h",
+                B: "70 km/h",
+                C: "80 km/h",
+                D: "90 km/h",
+                Answer: "C",
+            },
+            {
+                que: "A plane flies at 600 km/h. How long will it take to travel 1800 km?",
+                A: "2 hours",
+                B: "3 hours",
+                C: "4 hours",
+                D: "5 hours",
+                Answer: "B",
+            },
+            {
+                que: "A man cycles at a speed of 15 km/h. How far will he travel in 40 minutes?",
+                A: "5 km",
+                B: "8 km",
+                C: "10 km",
+                D: "12 km",
+                Answer: "C",
+            }
+        ];
+
+        const displayQuestions = (i) => {
+            if (i >= queobj.length) {
+                let avg = Wanswer+Canswer
+                let pavg = Canswer*100/avg
+                pavg=pavg.toFixed(2)
+                let result = pavg > 35 ? "Pass" : "Fail";
+                clearInterval(timerInterval);
+                questionBank.innerHTML = `
+                    <p>Hey there ! ${name}    your score is here  </p>
+                    <p>All questions are finished</p>
+                    <br>
+                    <p>Correct Answers: ${Canswer}</p>
+                    <p>Wrong Answers: ${Wanswer}</p>
+                    <p>Unattempted: ${Nattempt}</p>
+                    <p>Avarage: ${avg}</p> 
+                    <p>Ratio: ${pavg}%</p>
+                    <p>Result: ${name} to  ${result} hoyi gayo !!</p>
+
+
+
+                `;
+                return;
+            }
+            
+            const A = document.getElementById('op1');
+            const B = document.getElementById('op2');
+            const C = document.getElementById('op3');
+            const D = document.getElementById('op4');
+            
+            // Reset button colors
+            A.className = 'optionbtn';
+            B.className = 'optionbtn';
+            C.className = 'optionbtn';
+            D.className = 'optionbtn';
+            
+            // Create question index
+            const question = queobj[i];
+            const Queque=document.getElementById("Queque").innerText=`Qno ${i+1} :`
+            // Create question divs dynamically
+            const questionTHead = document.getElementById("questionTHead");
+            questionTHead.innerHTML = question.que;
+            
+            // Assign options value 
+            A.innerHTML = question.A;
+            B.innerHTML = question.B;
+            C.innerHTML = question.C;
+            D.innerHTML = question.D;
+
+            // Reset the timer
+            countdown = 30;
+        }
+
+        const checkAnswer = (option) => {
+            const question = queobj[counter];
+            const btn = document.getElementById(`op${option === 'A' ? 1 : option === 'B' ? 2 : option === 'C' ? 3 : 4}`);
+            if (question.Answer === option) {
+                Canswer++;
+                console.log("Correct answer count: " + Canswer);
+                btn.className = 'optionbtn correct';
+            } else {
+                Wanswer++;
+                console.log("Wrong answer count: " + Wanswer);
+                btn.className = 'optionbtn wrong';
+            }
+        }
+
+        const displayTimer = () => {
+            const time = document.getElementById("time");
+            if (countdown >= 0) {
+                time.innerText = `00:${countdown}`;
+                console.log(countdown);
+                countdown--;
+            } else {
+                Nattempt++;
+                submitEvent();
+            }
+        };
+
+        const submitEvent = () => {
+            let submitbtn = document.getElementById("submitbtn")
+            if(counter+1 >= queobj.length){
+                submitbtn.innerText="Finish"
+            }
+           if(counter < queobj.length){
+            counter++;
+            if (counter < queobj.length) {
+                displayQuestions(counter);
+            } else {
+                clearInterval(timerInterval);
+                displayQuestions(counter);
+            }
+            console.log("Question index: " + counter);
+           }else{
+              alert("You will be redirected to the home page.");
+            window.location.href = "index.html";
+           }
+        };
+
+        // Start the timer
+        timerInterval = setInterval(displayTimer, 1000);
+        displayQuestions(counter);
+    </script>
+</body>
+</html>

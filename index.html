@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yng quiz app</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <div class="MainContainer">
+        <div class="bodyContainer">
+            <header ><span class="Nlineheaders">Quix app</span> <span class="smalls"> powerd by</span> </header>
+            <br>
+            <br>
+            <a href="https://github.com/yng-blood"> 
+               <button  class="button-89" role="button">
+                yng-blood
+        </button>
+           </a>
+           
+        </div>
+        <br>
+        <br>
+        <div class="Headline bodyContainer" id="templatename">Hey there!</div>
+        <br>
+        
+        <span class="bodyContainer">Enter Your Name Wisely, you have 30 seconds for all the questions to attempt</span>
+        <br>
+        <div class="bodyContainer mainelement">
+            <input type="text" id="UiName" />
+            <p class="hiden">________</p>
+            <button onclick="handleClick()" class="button-19" role="button" >Get started</button>
+        </div>
+        <p class="bodyContainer"> chouse your syllabus to start!</p>
+        <div id="courcecard" class="courcecard">
+            
+        </div>
+    </div>
+
+    <script>
+        let userName = '';
+
+        const handleClick = () => {
+            const inputField = document.getElementById('UiName');
+            userName = inputField.value.trim();
+            console.log(userName)
+            if (userName) {
+                updateTemplateName(userName);
+                clearInputField(inputField);
+                generateCourseCards(userName);
+            }
+        };
+
+        const updateTemplateName = (userName) => {
+            const templateNameElement = document.getElementById('templatename');
+            templateNameElement.textContent = `Hey there! ${userName}`;
+        };
+
+        const clearInputField = (inputField) => {
+            inputField.value = '';
+        };
+
+        const generateCourseCards = (userName) => {
+            const courseCardContainer = document.getElementById('courcecard');
+            const courseCards = [
+                { name: 'Time & Distance',
+                    link:`./index2n.html?name=${userName}` 
+                    },
+                { name: 'Algebric Expression',
+                     link:`./index3n.html?name=${userName}`
+                 },
+                { name: 'Work and Hours' ,  
+                     link:`./index4n.html?name=${userName}`
+                },
+                { name: 'Height and distance' ,
+                     link:`./index5n.html?name=${userName}`
+                },
+            ];
+
+            courseCards.forEach((course) => {
+                const anchorcourseCard = document.createElement('a');
+                anchorcourseCard.href=course.link
+                courseCardContainer.appendChild(anchorcourseCard); 
+                const courseCard = document.createElement('div');
+                courseCard.textContent = course.name;
+                courseCard.className="button-20"
+                anchorcourseCard.appendChild(courseCard);
+            });
+        };
+    </script>
+</body>
+</html>

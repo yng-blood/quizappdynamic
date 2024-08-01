@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz App</title>
+    <link rel="stylesheet" href="./style.css">
+
+    <style>
+        .correct {
+            background-color: green;
+            color: white;
+        }
+        .wrong {
+            background-color: red;
+            color:white    ;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="MainContainer boxcabin">
+        <a  href="./index.html" class="smalls"> go to home</a>
+        <p id="time" class="boxmincabin"></p>
+        <img>
+        
+        <div class="questionBank" id="questionBank">
+            <div class="centerCabin"> 
+               <span id="Queque"></span> <span id="questionTHead"></span>
+               <br>
+               <br>
+                <button class="optionbtn"  id="op1" onclick="checkAnswer('A')"></button>
+                <button class="optionbtn" id="op2" onclick="checkAnswer('B')"></button>
+                <button class="optionbtn" id="op3" onclick="checkAnswer('C')"></button>
+                <button class="optionbtn" id="op4" onclick="checkAnswer('D')"></button>
+            </div>
+        </div>
+        <br>
+        <button id="submitbtn" class="button-19" role="button" onclick="submitEvent()">Next</button>
+    </div>
+    <script>
+        const questionBank = document.getElementById("questionBank");
+        let counter = 0;
+        let Canswer = 0;
+        let Wanswer = 0;
+        let Nattempt = 0;
+        let countdown;
+        let timerInterval;
+        const urlParams = new URLSearchParams(window.location.search);
+        const name = urlParams.get('name');
+
+        const queobj = [
+                    {
+                    que: "If John can complete a job in 6 hours, how much of the job can he complete in 1 hour?",
+                    A: "1/6",
+                    B: "1/3",
+                    C: "1/2",
+                    D: "1/4",
+                    Answer: "A",
+                },
+                {
+                    que: "Two workers can complete a task in 8 hours. If one worker alone can do it in 12 hours, how long will it take the second worker to do it alone?",
+                    A: "24 hours",
+                    B: "16 hours",
+                    C: "12 hours",
+                    D: "8 hours",
+                    Answer: "B",
+                },
+                {
+                    que: "If a task takes 5 workers 10 hours to complete, how many hours would it take for 2 workers to complete the same task?",
+                    A: "25 hours",
+                    B: "20 hours",
+                    C: "30 hours",
+                    D: "15 hours",
+                    Answer: "C",
+                },
+                {
+                    que: "A job can be done by 3 workers in 15 days. How many workers are needed to complete the job in 5 days?",
+                    A: "6 workers",
+                    B: "9 workers",
+                    C: "12 workers",
+                    D: "10 workers",
+                    Answer: "B",
+                },
+                {
+                    que: "If a worker completes half of a task in 6 hours, how long will it take to complete the entire task?",
+                    A: "10 hours",
+                    B: "12 hours",
+                    C: "8 hours",
+                    D: "14 hours",
+                    Answer: "B",
+                },
+                {
+                    que: "Two workers, A and B, can complete a job in 10 days. Worker A alone can do it in 15 days. How long will it take worker B to do it alone?",
+                    A: "30 days",
+                    B: "20 days",
+                    C: "25 days",
+                    D: "35 days",
+                    Answer: "A",
+                },
+                {
+                    que: "A man can paint a house in 12 days, and his son can do it in 18 days. How long will it take them to paint the house together?",
+                    A: "6 days",
+                    B: "7.2 days",
+                    C: "10 days",
+                    D: "8 days",
+                    Answer: "B",
+                },
+                {
+                    que: "If three people can complete a job in 4 hours, how long will it take six people to complete the same job?",
+                    A: "1 hour",
+                    B: "2 hours",
+                    C: "3 hours",
+                    D: "4 hours",
+                    Answer: "B",
+                },
+                {
+                    que: "A worker is paid $150 for 5 hours of work. How much will he be paid for 8 hours of work?",
+                    A: "$240",
+                    B: "$200",
+                    C: "$300",
+                    D: "$180",
+                    Answer: "A",
+                },
+                {
+                    que: "If a machine can produce 50 units in 2 hours, how many units can it produce in 6 hours?",
+                    A: "100 units",
+                    B: "150 units",
+                    C: "200 units",
+                    D: "250 units",
+                    Answer: "B",
+                }
+        ];
+
+        const displayQuestions = (i) => {
+            if (i >= queobj.length) {
+                let avg = Wanswer+Canswer
+                let pavg = Canswer*100/avg
+                pavg=pavg.toFixed(2)
+                let result = pavg > 35 ? "Pass" : "Fail";
+                clearInterval(timerInterval);
+                questionBank.innerHTML = `
+                    <p>Hey there ! ${name}    your score is here  </p>
+                    <p>All questions are finished</p>
+                    <br>
+                    <p>Correct Answers: ${Canswer}</p>
+                    <p>Wrong Answers: ${Wanswer}</p>
+                    <p>Unattempted: ${Nattempt}</p>
+                    <p>Avarage: ${avg}</p> 
+                    <p>Ratio: ${pavg}%</p>
+                    <p>Result: ${name} to  ${result} hoyi gayo !!</p>
+
+
+
+                `;
+                return;
+            }
+            
+            const A = document.getElementById('op1');
+            const B = document.getElementById('op2');
+            const C = document.getElementById('op3');
+            const D = document.getElementById('op4');
+            
+            // Reset button colors
+            A.className = 'optionbtn';
+            B.className = 'optionbtn';
+            C.className = 'optionbtn';
+            D.className = 'optionbtn';
+            
+            // Create question index
+            const question = queobj[i];
+            const Queque=document.getElementById("Queque").innerText=`Qno ${i+1} :`
+            // Create question divs dynamically
+            const questionTHead = document.getElementById("questionTHead");
+            questionTHead.innerHTML = question.que;
+            
+            // Assign options value 
+            A.innerHTML = question.A;
+            B.innerHTML = question.B;
+            C.innerHTML = question.C;
+            D.innerHTML = question.D;
+
+            // Reset the timer
+            countdown = 30;
+        }
+
+        const checkAnswer = (option) => {
+            const question = queobj[counter];
+            const btn = document.getElementById(`op${option === 'A' ? 1 : option === 'B' ? 2 : option === 'C' ? 3 : 4}`);
+            if (question.Answer === option) {
+                Canswer++;
+                console.log("Correct answer count: " + Canswer);
+                btn.className = 'optionbtn correct';
+            } else {
+                Wanswer++;
+                console.log("Wrong answer count: " + Wanswer);
+                btn.className = 'optionbtn wrong';
+            }
+        }
+
+        const displayTimer = () => {
+            const time = document.getElementById("time");
+            if (countdown >= 0) {
+                time.innerText = `00:${countdown}`;
+                console.log(countdown);
+                countdown--;
+            } else {
+                Nattempt++;
+                submitEvent();
+            }
+        };
+
+        const submitEvent = () => {
+            let submitbtn = document.getElementById("submitbtn")
+            if(counter+1 >= queobj.length){
+                submitbtn.innerText="Finish"
+            }
+           if(counter < queobj.length){
+            counter++;
+            if (counter < queobj.length) {
+                displayQuestions(counter);
+            } else {
+                clearInterval(timerInterval);
+                displayQuestions(counter);
+            }
+            console.log("Question index: " + counter);
+           }else{
+              alert("You will be redirected to the home page.");
+            window.location.href = "index.html";
+           }
+        };
+
+        // Start the timer
+        timerInterval = setInterval(displayTimer, 1000);
+        displayQuestions(counter);
+    </script>
+</body>
+</html>
